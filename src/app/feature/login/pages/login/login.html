@@ -1,5 +1,5 @@
 <main>
-  <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+  <form nz-form [formGroup]="loginForm" class="login-form" (ngSubmit)="login()">
     <nz-form-item>
       <nz-form-control nzErrorTip="Please input your username!">
         <nz-input-wrapper>

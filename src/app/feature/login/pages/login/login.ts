@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { AuthService, ILoginRequest } from '../../../../core/auth';
+import { ValidateForm as ValidateFormGroup } from '../../../../shared/functions/form/validate-form';
 
 @Component({
   selector: 'app-login',
@@ -13,22 +15,18 @@ import { NzInputModule } from 'ng-zorro-antd/input';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Login {
-  private fb = inject(FormBuilder);
-  validateForm = this.fb.group({
-    username: this.fb.control('', [Validators.required]),
-    password: this.fb.control('', [Validators.required])
+  private readonly formBuilder = inject(UntypedFormBuilder);
+  private readonly authService = inject(AuthService);
+  loginForm = this.formBuilder.group({
+    username: this.formBuilder.control('', [Validators.required]),
+    password: this.formBuilder.control('', [Validators.required])
   });
 
-  submitForm(): void {
-    if (this.validateForm.valid) {
-      console.log('submit', this.validateForm.value);
+  public login(): void {
+    if (this.loginForm.valid) {
+      this.authService.login(this.loginForm.value as ILoginRequest).subscribe();
     } else {
-      Object.values(this.validateForm.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+      ValidateFormGroup(this.loginForm);
     }
   }
 }
