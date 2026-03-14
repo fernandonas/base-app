@@ -31,8 +31,8 @@ export class AuthService {
     return this.httpClient.post<IRegisterResponse>(`${this.API}:register`, registerRequest)
       .pipe(
         tap(() => {
-          this.notificationService.success('Cadastro realizado com sucesso!!', 'Faça login para acessar a aplicação.');
-          this.router.navigate(['/login']);
+          this.notificationService.success('Cadastro realizado com sucesso!!', '');
+          this.login(registerRequest as ILoginRequest).subscribe();
         }),
         catchError(error => {
           this.notificationService.error('Erro ao realizar cadastro', '');
@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   private onErrorLogin(): void {
-    this.notificationService.error('Erro ao realizar login', '');
+    this.notificationService.error('Usuário ou senha inválidos!', '');
   }
 
   public onInvalidToken(): void {
