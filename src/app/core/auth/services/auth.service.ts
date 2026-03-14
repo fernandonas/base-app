@@ -1,29 +1,44 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, tap } from 'rxjs';
+import { catchError, Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ILoginRequest, ILoginResponse } from '../models/login.model';
 import { Router } from '@angular/router';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { IRegisterRequest, IRegisterResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
+  private readonly httpClient = inject(HttpClient);
   private readonly notificationService = inject(NzNotificationService);
-  
-  private API = environment.api.login;
 
-  public login(loginRequest: ILoginRequest) {
-    return this.http.post<ILoginResponse>(`${this.API}`, loginRequest)
+  private readonly API = environment.api.login;
+
+  public login(loginRequest: ILoginRequest): Observable<ILoginResponse> {
+    return this.httpClient.post<ILoginResponse>(`${this.API}`, loginRequest)
       .pipe(
-        tap(loginResponse =>  this.onSuccesLogin(loginResponse)),
+        tap(loginResponse => this.onSuccesLogin(loginResponse)),
         catchError(error => {
           this.onErrorLogin();
           throw error;
         }));
+  }
+
+  public register(registerRequest: IRegisterRequest): Observable<IRegisterResponse> {
+    return this.httpClient.post<IRegisterResponse>(`${this.API}:register`, registerRequest)
+      .pipe(
+        tap(() => {
+          this.notificationService.success('Cadastro realizado com sucesso!!', 'Faça login para acessar a aplicação.');
+          this.router.navigate(['/login']);
+        }),
+        catchError(error => {
+          this.notificationService.error('Erro ao realizar cadastro', '');
+          throw error;
+        }
+        ));
   }
 
   private onSuccesLogin(loginResponse: ILoginResponse): void {
