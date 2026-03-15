@@ -1,1 +1,4 @@
-<button nz-button nzType="primary" (click)="logout()">Logout</button>
+<nz-spin [nzSpinning]="user.isLoading()">
+    <span>{{ user.value()?.name }}</span>
+    <button nz-button nzType="primary" (click)="logout()">Logout</button>
+</nz-spin>

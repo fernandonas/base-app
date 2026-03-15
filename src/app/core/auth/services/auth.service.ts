@@ -53,7 +53,7 @@ export class AuthService {
 
   public onInvalidToken(): void {
     this.router.navigate(['/login']);
-    this.notificationService.error('Ops!!', 'Faça login para acessar esta página.');
+    this.notificationService.error('Ops!! Seu login expirou.', 'Faça login para acessar esta página.');
   }
 
   public getToken(): string | null {
