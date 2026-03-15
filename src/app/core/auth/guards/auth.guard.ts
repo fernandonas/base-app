@@ -6,7 +6,7 @@ export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
 
   if (!authService.isLogged()) {
-    authService.onInvalidToken ();
+    authService.onInvalidToken();
     return false;
   }
 

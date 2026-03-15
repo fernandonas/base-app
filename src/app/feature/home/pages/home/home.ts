@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@a
 import { AuthService } from '../../../../core/auth';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { UserService } from '../../../../shared/services/user-service';
-import { IUserResponse } from '../../../../shared/models';
 import { lastValueFrom } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 

@@ -31,11 +31,11 @@ export class AuthService {
     return this.httpClient.post<IRegisterResponse>(`${this.API}:register`, registerRequest)
       .pipe(
         tap(() => {
-          this.notificationService.success('Cadastro realizado com sucesso!!', '');
+          this.notificationService.success('Cadastro realizado com sucesso.', '');
           this.login(registerRequest as ILoginRequest).subscribe();
         }),
         catchError(error => {
-          this.notificationService.error('Erro ao realizar cadastro', '');
+          this.notificationService.error('Erro ao realizar cadastro.', '');
           throw error;
         }
         ));
@@ -43,15 +43,16 @@ export class AuthService {
 
   private onSuccesLogin(loginResponse: ILoginResponse): void {
     localStorage.setItem('token', loginResponse.token);
-    this.notificationService.success('Bem-vindo!!', 'Redirecionado para a página inicial.');
     this.router.navigate(['/']);
+    this.notificationService.success('Bem-vindo!!', 'Redirecionado para a página inicial.');
   }
 
   private onErrorLogin(): void {
-    this.notificationService.error('Usuário ou senha inválidos!', '');
+    this.notificationService.error('Usuário ou senha inválidos.', '');
   }
 
   public onInvalidToken(): void {
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
     this.notificationService.error('Ops!! Seu login expirou.', 'Faça login para acessar esta página.');
   }
@@ -62,8 +63,8 @@ export class AuthService {
 
   public logout(): void {
     localStorage.removeItem('token');
-    this.notificationService.error('Você foi desconectado com sucesso.', 'Faça login novamente para acessar a aplicação.');
     this.router.navigate(['/login']);
+    this.notificationService.error('Você foi desconectado com sucesso.', 'Faça login novamente para acessar a aplicação.');
   }
 
   public isLogged(): boolean {

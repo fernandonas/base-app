@@ -9,7 +9,6 @@ import { IUserResponse } from '../models';
 })
 export class UserService {
   private readonly http = inject(HttpClient);
-
   private readonly API = environment.api.user;
 
   public getUser(): Observable<IUserResponse> {

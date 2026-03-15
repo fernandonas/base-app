@@ -16,7 +16,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   }
   return next(authReq).pipe(
     catchError((error) => {
-      if (error.status === 401) {
+      if (token && error.status === 401) {
         authService.onInvalidToken();
       }
       return throwError(() => error);
