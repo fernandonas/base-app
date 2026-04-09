@@ -1,28 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
-import { AuthService } from '../../../../core/auth';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { UserService } from '../../../../shared/services/user-service';
-import { lastValueFrom } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { Filter } from "../../../filter/components/filter/filter";
 
 @Component({
   selector: 'app-home',
-  imports: [NzButtonModule, NzSpinModule],
+  imports: [Filter],
   templateUrl: './home.html',
   styleUrl: './home.less',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Home {
-  private readonly authservice = inject(AuthService);
-  private readonly userService = inject(UserService);
+export class Home { }
 
-  user = resource({
-    loader: () => lastValueFrom(this.userService.getUser()),
-    defaultValue: undefined
-  });
-
-  logout(): void {
-    this.authservice.logout();
-  } 
-
-}

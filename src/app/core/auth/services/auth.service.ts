@@ -1,73 +1,43 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, tap } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ILoginRequest, ILoginResponse } from '../models/login.model';
+import { UserService } from '../../../shared/services/user-service';
+import { IUserResponse } from '../../../shared/models';
+import Keycloak from 'keycloak-js';
 import { Router } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { IRegisterRequest, IRegisterResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly router = inject(Router);
   private readonly httpClient = inject(HttpClient);
-  private readonly notificationService = inject(NzNotificationService);
+  private readonly userService = inject(UserService);
+  private readonly route = inject(Router);
 
-  private readonly API = environment.api.login;
 
-  public login(loginRequest: ILoginRequest): Observable<ILoginResponse> {
-    return this.httpClient.post<ILoginResponse>(`${this.API}`, loginRequest)
-      .pipe(
-        tap(loginResponse => this.onSuccesLogin(loginResponse)),
-        catchError(error => {
-          this.onErrorLogin();
-          throw error;
-        }));
-  }
-
-  public register(registerRequest: IRegisterRequest): Observable<IRegisterResponse> {
-    return this.httpClient.post<IRegisterResponse>(`${this.API}:register`, registerRequest)
-      .pipe(
-        tap(() => {
-          this.notificationService.success('Cadastro realizado com sucesso.', '');
-          this.login(registerRequest as ILoginRequest).subscribe();
-        }),
-        catchError(error => {
-          this.notificationService.error('Erro ao realizar cadastro.', '');
-          throw error;
+  public async syncUser() {
+    await firstValueFrom(this.httpClient.get<IUserResponse>(environment.api.signIn).pipe(
+      tap((user) => {
+        this.userService.setUser(user);
+        if (user.first_access) {
+          this.route.navigate(['/first-login']);
         }
-        ));
+
+      })
+    ));
   }
 
-  private onSuccesLogin(loginResponse: ILoginResponse): void {
-    localStorage.setItem('token', loginResponse.token);
-    this.router.navigate(['/']);
-    this.notificationService.success('Bem-vindo!!', 'Redirecionado para a página inicial.');
+  private userRoles(): string[] {
+    const kc = inject(Keycloak);
+    const token = kc.tokenParsed;
+    if (!token) return [];
+    return token.realm_access?.roles || [];
   }
 
-  private onErrorLogin(): void {
-    this.notificationService.error('Usuário ou senha inválidos.', '');
+  public allowedRole(roles: string[]): boolean {
+    const userRoles = this.userRoles();
+    return roles.some(role => userRoles.includes(role));
   }
 
-  public onInvalidToken(): void {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
-    this.notificationService.error('Ops!! Seu login expirou.', 'Faça login para acessar esta página.');
-  }
-
-  public getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  public logout(): void {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
-    this.notificationService.error('Você foi desconectado com sucesso.', 'Faça login novamente para acessar a aplicação.');
-  }
-
-  public isLogged(): boolean {
-    return !!this.getToken();
-  }
 }

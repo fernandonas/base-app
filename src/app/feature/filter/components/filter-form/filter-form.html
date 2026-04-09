@@ -1,0 +1,17 @@
+<nz-select [(ngModel)]="selected1" (ngModelChange)="onChange1($event)">
+  <nz-option *ngFor="let o of options1()" [nzValue]="o.id" [nzLabel]="o.name"></nz-option>
+</nz-select>
+
+<nz-select [(ngModel)]="selected2" (ngModelChange)="onChange2($event)">
+  <nz-option *ngFor="let o of options2()" [nzValue]="o.id" [nzLabel]="o.name"></nz-option>
+</nz-select>
+
+<nz-select [(ngModel)]="selected3" (ngModelChange)="onChange3($event)">
+  <nz-option *ngFor="let o of options3()" [nzValue]="o.id" [nzLabel]="o.name"></nz-option>
+</nz-select>
+
+<nz-select [(ngModel)]="selected4" (ngModelChange)="onChange4($event)">
+  <nz-option *ngFor="let o of options4()" [nzValue]="o.id" [nzLabel]="o.name"></nz-option>
+</nz-select>
+
+<button nz-button nzType="primary" (click)="applyFilter()">Aplicar</button>

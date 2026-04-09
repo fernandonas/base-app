@@ -1,0 +1,6 @@
+<h1>Expenses</h1>
+@defer(when !expenses.isLoading()) {
+{{ expenses.value()?.message }}
+} @placeholder {
+...
+}

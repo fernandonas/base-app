@@ -1,17 +1,12 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Injectable, Signal, signal } from '@angular/core';
 import { IUserResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private readonly http = inject(HttpClient);
-  private readonly API = environment.api.user;
-
-  public getUser(): Observable<IUserResponse> {
-    return this.http.get<IUserResponse>(this.API);
-  }
+  private readonly user = signal<IUserResponse | null>(null);
+  public setUser = (userResponse: IUserResponse) => this.user.set(userResponse);
+  public udateUser = (userResponse: IUserResponse) => this.user.update(() => userResponse);
+  public getUser = (): Signal<IUserResponse | null> => this.user.asReadonly();
 }

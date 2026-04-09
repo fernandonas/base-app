@@ -7,16 +7,18 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './core/auth/interceptors/token.interceptor';
+import { provideKeycloakAngular } from './core/auth/keycloak-provide';
+import { provideAuthInitializer } from './core/initializer/auth.initializer';
 
 registerLocaleData(en);
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideKeycloakAngular(),
+    provideHttpClient(withInterceptors([tokenInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideRouter(APP_ROUTES),
     provideNzI18n(en_US),
-    provideHttpClient(
-      withInterceptors([tokenInterceptor])
-    )
+    provideAuthInitializer()
   ]
 };
